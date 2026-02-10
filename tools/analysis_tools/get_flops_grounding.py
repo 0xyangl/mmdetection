@@ -246,11 +246,12 @@ def count_backbone_flops(model, input_shape, device, logger):
     x = torch.randn(1, 3, h, w).to(device)
 
     if FlopCountAnalysis is not None:
-        flops_analyzer = FlopCountAnalysis(backbone, x)
-        flops_analyzer.unsupported_ops_warnings(False)
-        flops_analyzer.uncalled_modules_warnings(False)
-        flops = flops_analyzer.total()
-        params = sum(p.numel() for p in backbone.parameters())
+        with torch.no_grad():
+            flops_analyzer = FlopCountAnalysis(backbone, x)
+            flops_analyzer.unsupported_ops_warnings(False)
+            flops_analyzer.uncalled_modules_warnings(False)
+            flops = flops_analyzer.total()
+            params = sum(p.numel() for p in backbone.parameters())
         return flops, params
     else:
         logger.warning('fvcore is not installed, backbone FLOPs cannot be '
@@ -398,7 +399,7 @@ def main():
         return
 
     cfg = Config.fromfile(args.config)
-    cfg.work_dir = tempfile.TemporaryDirectory().name
+    cfg.work_dir = tempfile.mkdtemp()
 
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
