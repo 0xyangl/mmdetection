@@ -49,11 +49,6 @@ def parse_args():
         default=[800, 1333],
         help='input image size (height width)')
     parser.add_argument(
-        '--text',
-        type=str,
-        default='car',
-        help='text prompt for computing text encoder FLOPs')
-    parser.add_argument(
         '--num-classes',
         type=int,
         default=None,
